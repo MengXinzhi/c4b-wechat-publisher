@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeChat Article Preview — blue theme</title>
+</head>
+<body style="max-width: 600px; margin: 0 auto; padding: 24px 20px; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', Roboto, sans-serif; background-color: #ffffff;">
+<p style="font-size: 22px; font-weight: bold; color: #333; text-align: center; margin: 8px 0 4px 0;">我用 AI 把一个 starter kit 改造成了公众号排版引擎</p>
+<p style="font-size: 14px; color: #888; text-align: center; margin: 8px 0 16px 0;">作者 / 苗文馨 ｜ 2026-10-04</p>
+<p style="background-color: #f0f7ff; color: #4a5568; font-size: 14px; padding: 12px 15px; margin: 0 0 16px 0; border-left: 4px solid #1a73e8;">📌 摘要：公众号编辑器是出了名的"挑剔"：禁 h1、禁 div、禁 script，样式必须全部内联。我拿到一份转换技能的 starter kit，用 skill-creator 的方法论把它改造成了带主题、带高亮框、带自动目录的个人排版引擎。这篇文章，就是用它排版的。</p>
+<p style="background-color: #f0f7ff; padding: 14px 18px; margin: 0 0 20px 0; border-left: 4px solid #1a73e8;"><p style="font-size: 15px; font-weight: bold; color: #333; margin: 0 0 6px 0;">📑 本文目录</p><p style="font-size: 15px; line-height: 2.0; color: #333; margin: 0;">▍公众号编辑器有多"挑剔"？</p>
+<p style="font-size: 15px; line-height: 2.0; color: #333; margin: 0;">▍拿来主义：从 starter kit 出发</p>
+<p style="font-size: 15px; line-height: 2.0; color: #333; margin: 0;">▍用 skill-creator 改造：不是写代码，是走流程</p>
+<p style="font-size: 15px; line-height: 2.0; color: #333; margin: 0;">▍改造前后对比</p>
+<p style="font-size: 15px; line-height: 2.0; color: #333; margin: 0;">▍三点收获</p>
+<p style="font-size: 15px; line-height: 2.0; color: #333; margin: 0;">▍你也可以试试</p></p>
+<p style="background-color: #f0f7ff; color: #4a5568; padding: 12px 15px; margin: 12px 0; border-left: 4px solid #1a73e8;">这篇文章记录 Elite20 挑战 C4B 的完整过程：从跑通一份 starter kit，到用 skill-creator 改造出我自己的公众号文章生成技能。你现在看到的排版，就是它的输出。</p>
+<h2 style="font-size: 21px; font-weight: bold; line-height: 1.6; color: #1a73e8; margin: 24px 0 12px 0; border-left: 4px solid #1a73e8; padding-left: 10px;">公众号编辑器有多"挑剔"？</h2>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;">如果你直接把网页 HTML 粘贴进公众号编辑器，会遭遇一连串静默失败：</p>
+<ul>
+<li style="font-size: 16px; line-height: 1.8; color: #333; margin: 6px 0;"><span style="background-color: #f5f5f5; color: #c7254e; font-size: 14px; padding: 2px 5px; border-radius: 0;">&lt;h1&gt;</span> 被禁——标题会被降级或删除</li>
+<li style="font-size: 16px; line-height: 1.8; color: #333; margin: 6px 0;"><span style="background-color: #f5f5f5; color: #c7254e; font-size: 14px; padding: 2px 5px; border-radius: 0;">&lt;div&gt;</span> 被禁——布局直接散架</li>
+<li style="font-size: 16px; line-height: 1.8; color: #333; margin: 6px 0;"><span style="background-color: #f5f5f5; color: #c7254e; font-size: 14px; padding: 2px 5px; border-radius: 0;">&lt;script&gt;</span>、<span style="background-color: #f5f5f5; color: #c7254e; font-size: 14px; padding: 2px 5px; border-radius: 0;">&lt;iframe&gt;</span> 被禁——所有交互内容消失</li>
+<li style="font-size: 16px; line-height: 1.8; color: #333; margin: 6px 0;"><span style="background-color: #f5f5f5; color: #c7254e; font-size: 14px; padding: 2px 5px; border-radius: 0;">&lt;style&gt;</span> 标签被禁——所有 CSS 必须逐个写在 <span style="background-color: #f5f5f5; color: #c7254e; font-size: 14px; padding: 2px 5px; border-radius: 0;">style=""</span> 属性里</li>
+<li style="font-size: 16px; line-height: 1.8; color: #333; margin: 6px 0;">外链图片可能丢失， SVG 保存即蒸发</li>
+</ul>
+<p style="background-color: #f0f7ff; color: #1a4d8f; padding: 12px 15px; margin: 14px 0; border-left: 4px solid #1a73e8;"><span style="font-weight: bold; color: #1a4d8f;">📘 知识点</span><br/><span>公众号编辑器本质上只接受一个"白名单 HTML 子集"： p、 h2、 h3、 ul、 ol、 li、 span、 img、 a、 table 等，且所有样式必须内联。</span></p>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;">所以，从 Markdown 到一篇排版好看的公众号文章，中间隔着一整套脏活：标签过滤、样式内联、中文排版优化。这正是"技能"该干的活。</p>
+<h2 style="font-size: 21px; font-weight: bold; line-height: 1.6; color: #1a73e8; margin: 24px 0 12px 0; border-left: 4px solid #1a73e8; padding-left: 10px;">拿来主义：从 starter kit 出发</h2>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;">C4B 挑战附赠了一份 starter kit：一个 <span style="background-color: #f5f5f5; color: #c7254e; font-size: 14px; padding: 2px 5px; border-radius: 0;">convert_to_wechat.py</span> 脚本，已经能读 Markdown 和 Word、过滤违规标签、套上基础的 inline CSS。</p>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;">我先跑通了它，然后对照挑战给出的"缺失能力清单"做减法：哪些能力对我的真实写作流程最有价值？</p>
+<p style="background-color: #f1f8e9; color: #2e5d32; padding: 12px 15px; margin: 14px 0; border-left: 4px solid #2e7d32;"><span style="font-weight: bold; color: #2e5d32;">🔧 实践</span><br/><span>不要试图一次补齐所有缺失能力。挑你最常用的两三个先做，跑通后再迭代。</span></p>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;">我最终选了 7 项，但按"先交比不交强"的原则分了优先级：多主题和 callout 框是刚需，目录和元数据是长文刚需，中文间距是专业感的分水岭。</p>
+<h2 style="font-size: 21px; font-weight: bold; line-height: 1.6; color: #1a73e8; margin: 24px 0 12px 0; border-left: 4px solid #1a73e8; padding-left: 10px;">用 skill-creator 改造：不是写代码，是走流程</h2>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;">这次挑战最特别的要求：必须用 skill-creator（做技能的技能）来开发技能。</p>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;">它把开发过程拆成了固定节奏：定义技能边界 → 规划可复用资源（ scripts / references / assets）→ 写 SKILL.md → 设计 eval 用例 → 打包验证。真正写代码只占其中一环。</p>
+<p style="background-color: #fff3e0; color: #a34a00; padding: 12px 15px; margin: 14px 0; border-left: 4px solid #e65100;"><span style="font-weight: bold; color: #a34a00;">⚠️ 注意</span><br/><span>skill-creator 的打包验证会检查 SKILL.md 的 description 字段格式，比如不能包含尖括号——这种坑只有跑一遍才知道。</span></p>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;">改造过程中我踩了一个典型的坑： Markdown 引擎会把连续的引用块合并成一个 <span style="background-color: #f5f5f5; color: #c7254e; font-size: 14px; padding: 2px 5px; border-radius: 0;">&lt;blockquote&gt;</span>，我最初按"每个 blockquote 一个 callout"来写逻辑，结果四个高亮框只有一个生效。修正方案是逐段落识别标记符号，再拆分成独立的框。</p>
+<p style="background-color: #fffde7; color: #7a5c00; padding: 12px 15px; margin: 14px 0; border-left: 4px solid #f9a825;"><span style="font-weight: bold; color: #7a5c00;">💡 提示</span><br/><span>写 eval 用例时，一定要让用例覆盖"你自以为没问题"的路径。这个 bug 就是 eval 第一轮就抓出来的。</span></p>
+<h2 style="font-size: 21px; font-weight: bold; line-height: 1.6; color: #1a73e8; margin: 24px 0 12px 0; border-left: 4px solid #1a73e8; padding-left: 10px;">改造前后对比</h2>
+<table style="border-collapse: collapse; margin: 12px 0; font-size: 14px; width: 100%;">
+
+<tr>
+<th style="background-color: #f0f7ff; color: #24292e; font-weight: bold; padding: 8px 10px; text-align: left; border: 1px solid #e0e0e0;">能力</th>
+<th style="background-color: #f0f7ff; color: #24292e; font-weight: bold; padding: 8px 10px; text-align: left; border: 1px solid #e0e0e0;">starter kit</th>
+<th style="background-color: #f0f7ff; color: #24292e; font-weight: bold; padding: 8px 10px; text-align: left; border: 1px solid #e0e0e0;">我的版本</th>
+</tr>
+
+
+<tr>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">主题配色</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">1 套固定</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">4 套可切换（ default/blue/warm/minimal）</td>
+</tr>
+<tr>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">Callout 高亮框</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">❌</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">📘知识点 / 🔧实践 / ⚠️注意 / 💡提示 四色</td>
+</tr>
+<tr>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">自动目录</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">❌</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;"><span style="background-color: #f5f5f5; color: #c7254e; font-size: 14px; padding: 2px 5px; border-radius: 0;">--toc</span> 从标题生成</td>
+</tr>
+<tr>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">文章元数据</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">❌</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">frontmatter 解析标题/作者/日期/摘要</td>
+</tr>
+<tr>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">页脚版权</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">❌</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">自动追加</td>
+</tr>
+<tr>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">中英文间距</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">❌</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">自动加空格，代码块内除外</td>
+</tr>
+<tr>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">批量转换</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;">❌</td>
+<td style="padding: 8px 10px; border: 1px solid #e0e0e0; color: #333;"><span style="background-color: #f5f5f5; color: #c7254e; font-size: 14px; padding: 2px 5px; border-radius: 0;">--batch</span> 整目录转换</td>
+</tr>
+
+</table>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;">标签过滤、 Word 读取、 inline CSS 这些底盘能力则原样继承——拿来主义不丢人，重复造轮子才丢人。</p>
+<h2 style="font-size: 21px; font-weight: bold; line-height: 1.6; color: #1a73e8; margin: 24px 0 12px 0; border-left: 4px solid #1a73e8; padding-left: 10px;">三点收获</h2>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;"><span style="font-weight: bold;">第一， AI 时代的杠杆是"流程"，不只是"代码"。</span> skill-creator 教我的不是怎么写 Python，而是怎么把一次性的转换需求沉淀成可复用、可验证、别人拿到就能用的技能包。</p>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;"><span style="font-weight: bold;">第二， eval 不是仪式，是安全网。</span> 如果没有第一轮 eval，那个 blockquote 合并的 bug 就会潜伏到我真正发布文章的那天。</p>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;"><span style="font-weight: bold;">第三，好排版是内容的一部分。</span> 中英文之间那个小小的空格、高亮框里那个 emoji 标签，读者未必说得出哪里好，但能感觉到"这篇不像随手发的"。</p>
+<h2 style="font-size: 21px; font-weight: bold; line-height: 1.6; color: #1a73e8; margin: 24px 0 12px 0; border-left: 4px solid #1a73e8; padding-left: 10px;">你也可以试试</h2>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;">如果你也想把自己的写作流程变成技能：</p>
+<ol>
+<li style="font-size: 16px; line-height: 1.8; color: #333; margin: 6px 0;">找到你重复做的事情（比如每次发公众号前的排版）</li>
+<li style="font-size: 16px; line-height: 1.8; color: #333; margin: 6px 0;">用 skill-creator 走一遍：边界 → 资源 → SKILL.md → eval → 打包</li>
+<li style="font-size: 16px; line-height: 1.8; color: #333; margin: 6px 0;">从 starter kit 出发，别从零开始——先理解，再改造，最后署上自己的名字</li>
+</ol>
+<p style="text-align: center; color: #bbbbbb; margin: 20px 0; letter-spacing: 8px;">· · ·</p>
+<p style="font-size: 16px; line-height: 1.8; color: #333; margin: 12px 0; letter-spacing: 0.5px;"><span style="font-style: italic;">本文由 miaowenxin-wechat-publisher 技能生成排版，主题： blue。</span></p>
+<p style="font-size: 13px; color: #999; text-align: center; margin: 28px 0 0 0; padding-top: 14px; border-top: 1px solid #e5e5e5;">© 2026 苗文馨 ｜ 原创文章，转载请联系授权</p>
+</body>
+</html>
